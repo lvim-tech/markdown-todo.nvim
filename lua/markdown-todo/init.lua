@@ -177,44 +177,46 @@ function M.make_todo(itemType)
 end
 
 function M.setup(user_config)
-	if user_config ~= nil then
-		utils.merge(config, user_config)
-	end
+	vim.schedule(function()
+		if user_config ~= nil then
+			utils.merge(config, user_config)
+		end
 
-	-- BufWinEnter captures first window. WinEnter captures the rest.
-	vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
-		group = augroup("set_hl"),
-		pattern = { "*.md" },
-		callback = set_hl,
-	})
+		-- BufWinEnter captures first window. WinEnter captures the rest.
+		vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
+			group = augroup("set_hl"),
+			pattern = { "*.md" },
+			callback = set_hl,
+		})
 
-	-- bind keys for markdown files only
-	vim.api.nvim_create_autocmd("BufEnter", {
-		group = augroup("bind_keys"),
-		pattern = { "*.md" },
-		callback = bind_keys,
-	})
+		-- bind keys for markdown files only
+		vim.api.nvim_create_autocmd("BufEnter", {
+			group = augroup("bind_keys"),
+			pattern = { "*.md" },
+			callback = bind_keys,
+		})
 
-	-- hide virtual icons when (1) entering insert mode (2) near a todo indicator.
-	vim.api.nvim_create_autocmd({
-		"InsertEnter",
-	}, {
-		group = augroup("hide_virtual_icons"),
-		pattern = { "*.md" },
-		callback = function()
-			local line = should_hide_icons()
-			if line then
-				hide_virtual_icons(line)
-			end
-		end,
-	})
+		-- hide virtual icons when (1) entering insert mode (2) near a todo indicator.
+		vim.api.nvim_create_autocmd({
+			"InsertEnter",
+		}, {
+			group = augroup("hide_virtual_icons"),
+			pattern = { "*.md" },
+			callback = function()
+				local line = should_hide_icons()
+				if line then
+					hide_virtual_icons(line)
+				end
+			end,
+		})
 
-	-- always show virtual icons when leaving insert mode
-	vim.api.nvim_create_autocmd("InsertLeave", {
-		group = augroup("set_virtual_icons"),
-		pattern = { "*.md" },
-		callback = set_virtual_icons,
-	})
+		-- always show virtual icons when leaving insert mode
+		vim.api.nvim_create_autocmd("InsertLeave", {
+			group = augroup("set_virtual_icons"),
+			pattern = { "*.md" },
+			callback = set_virtual_icons,
+		})
+	end)
 end
 
 return M
