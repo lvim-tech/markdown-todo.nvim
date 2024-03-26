@@ -1,6 +1,7 @@
 local M = {
-	file_types = { "markdown" },
-	markdown_query = [[
+	style = {
+		file_types = { "markdown" },
+		markdown_query = [[
             (atx_heading [
                 (atx_h1_marker)
                 (atx_h2_marker)
@@ -25,97 +26,100 @@ local M = {
             (pipe_table_delimiter_row) @table_delim
             (pipe_table_row) @table_row
         ]],
-	render_modes = { "n", "c" },
-	headings = { "", "", "" },
-	bullet = "",
-	quote = "┃",
-	highlights = {
-		heading = {
-			backgrounds = { "MarkdownLine" },
-			foregrounds = {
-				"MarkdownH1",
-				"MarkdownH2",
-				"MarkdownH3",
-				"MarkdownH4",
-				"MarkdownH5",
-				"MarkdownH6",
+		render_modes = { "n", "c" },
+		headings = { "", "", "" },
+		bullet = "",
+		quote = "┃",
+		highlights = {
+			heading = {
+				backgrounds = { "MarkdownLine" },
+				foregrounds = {
+					"MarkdownH1",
+					"MarkdownH2",
+					"MarkdownH3",
+					"MarkdownH4",
+					"MarkdownH5",
+					"MarkdownH6",
+				},
+			},
+			code = "MarkdownLine",
+			bullet = "MarkdownBullet",
+			table = {
+				head = "@markup.heading",
+				row = "Delimiter",
+			},
+			latex = "@markup.math",
+			quote = "@markup.quote",
+		},
+	},
+	to_do = {
+		lead_chars = {
+			"######",
+			"#####",
+			"####",
+			"###",
+			"##",
+			"#",
+			"-",
+		},
+		indicators = {
+			undone = {
+				literal = " ",
+				icon = " ",
+				hl = "MarkdownUndone",
+			},
+			pending = {
+				literal = "-",
+				hl = "MarkdownPending",
+				icon = "󰥔",
+			},
+			done = {
+				literal = "x",
+				hl = "MarkdownDone",
+				icon = "󰄬",
+			},
+			on_hold = {
+				literal = "=",
+				hl = "MarkdownOnHold",
+				icon = "",
+			},
+			cancelled = {
+				literal = "y",
+				hl = "MarkdownCancelled",
+				icon = "",
+			},
+			important = {
+				literal = "!",
+				hl = "MarkdownImportant",
+				icon = "⚠",
+			},
+			recurring = {
+				literal = "+",
+				hl = "MarkdownRecurring",
+				icon = "↺",
+			},
+			ambiguous = {
+				literal = "?",
+				hl = "MarkdownAmbiguos",
+				icon = "",
+			},
+			on_going = {
+				literal = "o",
+				hl = "MarkdownOnGoing",
+				icon = "",
 			},
 		},
-		code = "MarkdownLine",
-		bullet = "MarkdownBullet",
-		table = {
-			head = "@markup.heading",
-			row = "Delimiter",
+		keys = {
+			undone = "<leader>tu",
+			pending = "<leader>tp",
+			done = "<leader>td",
+			on_hold = "<leader>th",
+			cancelled = "<leader>tc",
+			important = "<leader>ti",
+			recurring = "<leader>tr",
+			ambiguous = "<leader>ta",
+			on_going = "<leader>to",
 		},
-		latex = "@markup.math",
-		quote = "@markup.quote",
-	},
-	lead_chars = {
-		"######",
-		"#####",
-		"####",
-		"###",
-		"##",
-		"#",
-		"-",
-	},
-	indicators = {
-		undone = {
-			literal = " ",
-			icon = " ",
-			hl = "MarkdownUndone",
-		},
-		pending = {
-			literal = "-",
-			hl = "MarkdownPending",
-			icon = "󰥔",
-		},
-		done = {
-			literal = "x",
-			hl = "MarkdownDone",
-			icon = "󰄬",
-		},
-		on_hold = {
-			literal = "=",
-			hl = "MarkdownOnHold",
-			icon = "",
-		},
-		cancelled = {
-			literal = "y",
-			hl = "MarkdownCancelled",
-			icon = "",
-		},
-		important = {
-			literal = "!",
-			hl = "MarkdownImportant",
-			icon = "⚠",
-		},
-		recurring = {
-			literal = "+",
-			hl = "MarkdownRecurring",
-			icon = "↺",
-		},
-		ambiguous = {
-			literal = "?",
-			hl = "MarkdownAmbiguos",
-			icon = "",
-		},
-		on_going = {
-			literal = "o",
-			hl = "MarkdownOnGoing",
-			icon = "",
-		},
-	},
-	keys = {
-		undone = "<leader>tu",
-		pending = "<leader>tp",
-		done = "<leader>td",
-		on_hold = "<leader>th",
-		cancelled = "<leader>tc",
-		important = "<leader>ti",
-		recurring = "<leader>tr",
-		ambiguous = "<leader>ta",
-		on_going = "<leader>to",
 	},
 }
 

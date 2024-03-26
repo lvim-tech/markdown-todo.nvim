@@ -33,25 +33,4 @@ M.is_array = function(t)
 	return true
 end
 
-M.parser_installed = function(name)
-	local ok = pcall(vim.treesitter.query.parse, name, "")
-	if ok then
-		vim.health.ok(name .. " parser installed")
-	else
-		vim.health.error(name .. " parser not found")
-	end
-end
-
-M.check_parser = function()
-	vim.health.start("Checking required treesitter parsers")
-	M.parser_installed("markdown")
-end
-
-M.cycle = function(values, index)
-	return values[((index - 1) % #values) + 1]
-end
-
-M.clamp_last = function(values, index)
-	return values[math.min(index, #values)]
-end
 return M
