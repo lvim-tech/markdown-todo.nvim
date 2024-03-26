@@ -53,7 +53,7 @@ local M = {
 		on_hold = "<leader>th",
 		cancelled = "<leader>tc",
 		important = "<leader>ti",
-		reccurring = "<leader>tr",
+		recurring = "<leader>tr",
 		ambiguous = "<leader>ta",
 		ongoing = "<leader>to",
 	},
