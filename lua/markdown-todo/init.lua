@@ -1,3 +1,5 @@
+local config = require("markdown-todo.config")
+
 ---@class markdown_todo
 local M = {}
 
@@ -6,55 +8,6 @@ local M = {}
 local lead_chars = {
 	"######", "#####", "####", "###", "##", "#", -- heading
 	"-", -- bullet
-}
-
----@type table<TodoItemType, TodoItemDefinition>
-local indicators = {
-	undone = {
-		literal = " ",
-		icon = " ",
-		hl = "Delimiter",
-	},
-	pending = {
-		literal = "-",
-		hl = "PreProc",
-		icon = "󰥔",
-	},
-	done = {
-		literal = "x",
-		hl = "String",
-		icon = "󰄬",
-	},
-	on_hold = {
-		literal = "=",
-		hl = "Special",
-		icon = "",
-	},
-	cancelled = {
-		literal = "y",
-		hl = "NonText",
-		icon = "",
-	},
-	important = {
-		literal = "!",
-		hl = "@text.danger",
-		icon = "⚠",
-	},
-	recurring = {
-		literal = "+",
-		hl = "Repeat",
-		icon = "↺",
-	},
-	ambiguous = {
-		literal = "?",
-		hl = "Boolean",
-		icon = "",
-	},
-	ongoing = {
-		literal = "o",
-		hl = "@keyword",
-		icon = "",
-	},
 }
 
 -- Helper functions
@@ -90,7 +43,7 @@ end
 local function add_todo_indicator(line, itemType)
 	local start, finish = is_lead_char(line)
 	if start then
-		line = line:sub(1, finish) .. " (" .. indicators[itemType].literal .. ")" .. line:sub(finish + 1)
+		line = line:sub(1, finish) .. " (" .. config.indicators[itemType].literal .. ")" .. line:sub(finish + 1)
 	end
 	return line
 end
@@ -105,7 +58,7 @@ local function update_todo_indicator(line, itemType)
 	if todo_indicator_index then
 		line = line:sub(1, todo_indicator_index - 1)
 			.. "("
-			.. indicators[itemType].literal
+			.. config.indicators[itemType].literal
 			.. ")"
 			.. line:sub(todo_indicator_index + 3)
 	end
@@ -139,8 +92,8 @@ local set_virtual_icon = function(indicator_index, itemType, line_num)
 	-- before setting new icons, clear existing ones
 	hide_virtual_icons(line_num)
 	vim.api.nvim_buf_set_extmark(0, ns_id, line_num, indicator_index, {
-		-- virt_text = { { indicators[itemType].icon, indicators[itemType].hl } },
-		virt_text = { { indicators[itemType].icon } },
+		-- virt_text = { { config.indicators[itemType].icon, config.indicators[itemType].hl } },
+		virt_text = { { config.indicators[itemType].icon } },
 		hl_mode = "combine",
 		virt_text_pos = "overlay",
 	})
@@ -149,20 +102,20 @@ end
 -- Binds keys to current buffer only.
 local function bind_keys()
 	-- stylua: ignore start
-	vim.keymap.set("n", "<leader>tu", function() require("markdown-todo").make_todo("undone") end, { buffer = 0, desc = "Mark as Undone" })
-	vim.keymap.set("n", "<leader>tp", function() require("markdown-todo").make_todo("pending") end, { buffer = 0, desc = "Mark as Pending" })
-	vim.keymap.set("n", "<leader>td", function() require("markdown-todo").make_todo("done") end, { buffer = 0, desc = "Mark as Done" })
-	vim.keymap.set("n", "<leader>th", function() require("markdown-todo").make_todo("on_hold") end, { buffer = 0, desc = "Mark as On Hold" })
-	vim.keymap.set("n", "<leader>tc", function() require("markdown-todo").make_todo("cancelled") end, { buffer = 0, desc = "Mark as Cancelled" })
-	vim.keymap.set("n", "<leader>ti", function() require("markdown-todo").make_todo("important") end, { buffer = 0, desc = "Mark as Important" })
-	vim.keymap.set("n", "<leader>tr", function() require("markdown-todo").make_todo("recurring") end, { buffer = 0, desc = "Mark as Recurring" })
-	vim.keymap.set("n", "<leader>ta", function() require("markdown-todo").make_todo("ambiguous") end, { buffer = 0, desc = "Mark as Ambiguous" })
-	vim.keymap.set("n", "<leader>to", function() require("markdown-todo").make_todo("ongoing") end, { buffer = 0, desc = "Mark as Ongoing" })
+	vim.keymap.set("n", config.keys.undone, function() require("markdown-todo").make_todo("undone") end, { buffer = 0, desc = "Mark as Undone" })
+	vim.keymap.set("n", config.keys.pending, function() require("markdown-todo").make_todo("pending") end, { buffer = 0, desc = "Mark as Pending" })
+	vim.keymap.set("n", config.keys.done, function() require("markdown-todo").make_todo("done") end, { buffer = 0, desc = "Mark as Done" })
+	vim.keymap.set("n", config.keys.on_hold, function() require("markdown-todo").make_todo("on_hold") end, { buffer = 0, desc = "Mark as On Hold" })
+	vim.keymap.set("n", config.keys.cancelled, function() require("markdown-todo").make_todo("cancelled") end, { buffer = 0, desc = "Mark as Cancelled" })
+	vim.keymap.set("n", config.keys.important, function() require("markdown-todo").make_todo("important") end, { buffer = 0, desc = "Mark as Important" })
+	vim.keymap.set("n", config.keys.recurring, function() require("markdown-todo").make_todo("recurring") end, { buffer = 0, desc = "Mark as Recurring" })
+	vim.keymap.set("n", config.keys.ambiguous, function() require("markdown-todo").make_todo("ambiguous") end, { buffer = 0, desc = "Mark as Ambiguous" })
+	vim.keymap.set("n", config.keys.ongoing, function() require("markdown-todo").make_todo("ongoing") end, { buffer = 0, desc = "Mark as Ongoing" })
 	-- stylua: ignore end
 end
 
 local function set_hl()
-	for _, indicator in pairs(indicators) do
+	for _, indicator in pairs(config.indicators) do
 		-- use \V for very nomagic (literal) matching
 		vim.fn.matchadd(indicator.hl, "(\\V" .. indicator.literal .. ")")
 	end
@@ -175,7 +128,7 @@ local function set_virtual_icons()
 		local indicator_index = has_todo_indicator(line)
 		if indicator_index then
 			local indicator_char = line:sub(indicator_index + 1, indicator_index + 1)
-			for itemType, indicator in pairs(indicators) do
+			for itemType, indicator in pairs(config.indicators) do
 				if indicator.literal == indicator_char then
 					set_virtual_icon(indicator_index, itemType, i - 1)
 					break
@@ -222,7 +175,11 @@ function M.make_todo(itemType)
 	end
 end
 
-function M.setup()
+function M.setup(user_config)
+	if user_config ~= nil then
+		utils.merge(config, user_config)
+	end
+
 	-- BufWinEnter captures first window. WinEnter captures the rest.
 	vim.api.nvim_create_autocmd({ "BufWinEnter", "WinEnter" }, {
 		group = augroup("set_hl"),
