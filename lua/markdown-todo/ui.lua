@@ -1,5 +1,4 @@
-local list = require("markdown-todo.list")
-local state = require("markdown-todo.state")
+local config = require("markdown-todo.config")
 
 local M = {}
 
@@ -10,14 +9,14 @@ M.clear = function()
 end
 
 M.refresh = function()
-	if not state.enabled then
+	if not config.enabled then
 		return
 	end
-	if not vim.tbl_contains(state.config.file_types, vim.bo.filetype) then
+	if not vim.tbl_contains(config.file_types, vim.bo.filetype) then
 		return
 	end
 	M.clear()
-	if not vim.tbl_contains(state.config.render_modes, vim.fn.mode()) then
+	if not vim.tbl_contains(config.render_modes, vim.fn.mode()) then
 		return
 	end
 	vim.treesitter.get_parser():for_each_tree(function(tree, language_tree)
@@ -31,16 +30,16 @@ M.refresh = function()
 end
 
 M.markdown = function(root)
-	local highlights = state.config.highlights
-	for id, node in state.markdown_query:iter_captures(root, 0) do
-		local capture = state.markdown_query.captures[id]
+	local highlights = config.highlights
+	for id, node in config.md_query:iter_captures(root, 0) do
+		local capture = config.md_query.captures[id]
 		local value = vim.treesitter.get_node_text(node, 0)
 		local start_row, start_col, end_row, end_col = node:range()
 		if capture == "heading" then
 			local level = #value
-			local heading = list.cycle(state.config.headings, level)
-			local background = list.clamp_last(highlights.heading.backgrounds, level)
-			local foreground = list.clamp_last(highlights.heading.foregrounds, level)
+			local heading = config.cycle(config.headings, level)
+			local background = config.clamp_last(highlights.heading.backgrounds, level)
+			local foreground = config.clamp_last(highlights.heading.foregrounds, level)
 			local virt_text = { string.rep(" ", level - 1) .. heading, { foreground, background } }
 			vim.api.nvim_buf_set_extmark(0, M.namespace, start_row, 0, {
 				end_row = end_row + 1,
@@ -59,7 +58,7 @@ M.markdown = function(root)
 			})
 		elseif capture == "list_marker" then
 			local _, leading_spaces = value:find("^%s*")
-			local virt_text = { string.rep(" ", leading_spaces or 0) .. state.config.bullet, highlights.bullet }
+			local virt_text = { string.rep(" ", leading_spaces or 0) .. config.bullet, highlights.bullet }
 			vim.api.nvim_buf_set_extmark(0, M.namespace, start_row, start_col, {
 				end_row = end_row,
 				end_col = end_col,
@@ -67,7 +66,7 @@ M.markdown = function(root)
 				virt_text_pos = "overlay",
 			})
 		elseif capture == "quote_marker" then
-			local virt_text = { value:gsub(">", state.config.quote), highlights.quote }
+			local virt_text = { value:gsub(">", config.quote), highlights.quote }
 			vim.api.nvim_buf_set_extmark(0, M.namespace, start_row, start_col, {
 				end_row = end_row,
 				end_col = end_col,
@@ -109,7 +108,7 @@ M.latex = function(root)
 	local expressions = vim.split(vim.trim(raw_expression), "\n", { plain = true })
 	local start_row, start_col, end_row, end_col = root:range()
 	local virt_lines = vim.tbl_map(function(expression)
-		return { { vim.trim(expression), state.config.highlights.latex } }
+		return { { vim.trim(expression), config.highlights.latex } }
 	end, expressions)
 	vim.api.nvim_buf_set_extmark(0, M.namespace, start_row, start_col, {
 		end_row = end_row,

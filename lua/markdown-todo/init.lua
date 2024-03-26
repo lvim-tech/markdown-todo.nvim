@@ -1,17 +1,17 @@
 local config = require("markdown-todo.config")
 local utils = require("markdown-todo.utils")
-local state = require("markdown-todo.state")
 local ui = require("markdown-todo.ui")
+
+local ns_id = vim.api.nvim_create_namespace("lvim-markdown-utils")
 
 local M = {}
 
 M.toggle = function()
-	if state.enabled then
-		state.enabled = false
+	if config.enabled then
+		config.enabled = false
 		vim.schedule(ui.clear)
 	else
-		state.enabled = true
-		-- Call to refresh must happen after state change
+		config.enabled = true
 		vim.schedule(ui.refresh)
 	end
 end
@@ -50,8 +50,6 @@ M.update_todo_indicator = function(line, itemType)
 	end
 	return line
 end
-
-local ns_id = vim.api.nvim_create_namespace("markdown-todo")
 
 M.should_hide_icons = function()
 	local line_num = vim.fn.line(".") - 1
@@ -101,9 +99,9 @@ M.bind_keys = function()
 	vim.keymap.set("n", config.keys.ambiguous, function()
 		require("markdown-todo").make_todo("ambiguous")
 	end, { buffer = 0, desc = "Mark as Ambiguous" })
-	vim.keymap.set("n", config.keys.ongoing, function()
-		require("markdown-todo").make_todo("ongoing")
-	end, { buffer = 0, desc = "Mark as Ongoing" })
+	vim.keymap.set("n", config.keys.on_going, function()
+		require("markdown-todo").make_todo("on_going")
+	end, { buffer = 0, desc = "Mark as On Going" })
 end
 
 M.set_hl = function()
@@ -160,8 +158,8 @@ M.setup = function(user_config)
 		utils.merge(config, user_config)
 	end
 
-	state.enabled = true
-	state.markdown_query = vim.treesitter.query.parse("markdown", state.config.markdown_query)
+	config.enabled = true
+	config.md_query = vim.treesitter.query.parse("markdown", config.markdown_query)
 
 	vim.schedule(ui.refresh)
 

@@ -47,4 +47,11 @@ M.check_parser = function()
 	M.parser_installed("markdown")
 end
 
+M.cycle = function(values, index)
+	return values[((index - 1) % #values) + 1]
+end
+
+M.clamp_last = function(values, index)
+	return values[math.min(index, #values)]
+end
 return M
