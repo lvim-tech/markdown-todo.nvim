@@ -58,3 +58,5 @@ local M = {
 		ongoing = "<leader>to",
 	},
 }
+
+return M
