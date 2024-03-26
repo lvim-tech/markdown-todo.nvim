@@ -33,4 +33,18 @@ M.is_array = function(t)
 	return true
 end
 
+M.parser_installed = function(name)
+	local ok = pcall(vim.treesitter.query.parse, name, "")
+	if ok then
+		vim.health.ok(name .. " parser installed")
+	else
+		vim.health.error(name .. " parser not found")
+	end
+end
+
+M.check_parser = function()
+	vim.health.start("Checking required treesitter parsers")
+	M.parser_installed("markdown")
+end
+
 return M
