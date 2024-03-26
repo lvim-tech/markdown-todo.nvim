@@ -1,4 +1,5 @@
 local config = require("markdown-todo.config")
+local utils = require("markdown-todo.utils")
 
 local M = {}
 
@@ -37,9 +38,9 @@ M.markdown = function(root)
 		local start_row, start_col, end_row, end_col = node:range()
 		if capture == "heading" then
 			local level = #value
-			local heading = config.cycle(config.headings, level)
-			local background = config.clamp_last(highlights.heading.backgrounds, level)
-			local foreground = config.clamp_last(highlights.heading.foregrounds, level)
+			local heading = utils.cycle(config.headings, level)
+			local background = utils.clamp_last(highlights.heading.backgrounds, level)
+			local foreground = utils.clamp_last(highlights.heading.foregrounds, level)
 			local virt_text = { string.rep(" ", level - 1) .. heading, { foreground, background } }
 			vim.api.nvim_buf_set_extmark(0, M.namespace, start_row, 0, {
 				end_row = end_row + 1,
