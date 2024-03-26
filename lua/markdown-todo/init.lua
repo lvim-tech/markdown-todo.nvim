@@ -1,4 +1,5 @@
 local config = require("markdown-todo.config")
+local utils = require("markdown-todo.utils")
 
 ---@class markdown_todo
 local M = {}
