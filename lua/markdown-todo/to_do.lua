@@ -35,6 +35,7 @@ M.init = function()
 		pattern = { "*.md" },
 		callback = M.set_virtual_icons,
 	})
+	M.bind_keys()
 end
 
 M.set_hl = function()

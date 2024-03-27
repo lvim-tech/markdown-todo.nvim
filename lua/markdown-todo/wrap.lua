@@ -2,6 +2,10 @@ local config = require("markdown-todo.config")
 
 local M = {}
 
+M.init = function()
+	M.bind_keys()
+end
+
 local get_line = function(line_num)
 	return vim.api.nvim_buf_get_lines(0, line_num - 1, line_num, false)[1]
 end
@@ -156,15 +160,15 @@ local newline_surround = function(before, after, opts)
 	end
 end
 
-function M.bold()
+M.bold = function()
 	inline_surround("**", "**")
 end
 
-function M.italic()
+M.italic = function()
 	inline_surround("_", "_")
 end
 
-function M.code()
+M.code = function()
 	if vim.fn.visualmode() == "V" then
 		vim.ui.input({ prompt = "Language:" }, function(lang)
 			if lang == nil then
@@ -177,7 +181,7 @@ function M.code()
 	end
 end
 
-function M.link()
+M.link = function()
 	vim.ui.input({ prompt = "Href:" }, function(href)
 		if href == nil then
 			return
@@ -186,7 +190,7 @@ function M.link()
 	end)
 end
 
-function M.init()
+M.bind_keys = function()
 	vim.api.nvim_create_autocmd("FileType", {
 		pattern = "markdown",
 		callback = function()
@@ -217,5 +221,4 @@ function M.init()
 		end,
 	})
 end
-
 return M
