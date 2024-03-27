@@ -129,6 +129,9 @@ local M = {
 			code = "<Leader>cc",
 		},
 	},
+	follow_link = {
+		key = "<CR>",
+	},
 }
 
 return M
